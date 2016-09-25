@@ -16,7 +16,7 @@ variable "do_token" {}
 variable "pub_key" {}
 variable "pvt_key" {}
 variable "ssh_fingerprint" {}
-variable "number_of_workers" {}
+variable "workers" {}
 
 
 ###############################################################################
@@ -171,7 +171,7 @@ resource "template_file" "worker_yaml" {
 
 
 resource "digitalocean_droplet" "k8s_worker" {
-    count = "${var.number_of_workers}"
+    count = "${var.workers}"
 
     image = "coreos-stable"
     name = "${format("k8s-worker-%02d", count.index + 1)}"
