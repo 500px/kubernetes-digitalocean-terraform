@@ -11,3 +11,7 @@ secrets/
 *.tfstate
 *.tfstate.backup
 
+*.tfvars
+
+do-key
+do-key.pub
