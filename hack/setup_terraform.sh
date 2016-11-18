@@ -4,11 +4,11 @@
 
 export TF_VAR_number_of_workers=3
 export TF_VAR_do_token=$(cat ./secrets/DO_TOKEN)
-export TF_VAR_pub_key="~/.ssh/id_rsa.pub"
-export TF_VAR_pvt_key="~/.ssh/id_rsa"
+export TF_VAR_pub_key="~/.ssh/id_rsa_do.pub"
+export TF_VAR_pvt_key="~/.ssh/id_rsa_do"
 
 if [[ `uname` == 'Darwin' ]]; then
-	export TF_VAR_ssh_fingerprint=$(ssh-keygen -E MD5 -lf ~/.ssh/id_rsa.pub | awk '{print $2}' | sed 's/MD5://g')
+	export TF_VAR_ssh_fingerprint=$(ssh-keygen -E MD5 -lf ~/.ssh/id_rsa_do.pub | awk '{print $2}' | sed 's/MD5://g')
 else
-	export TF_VAR_ssh_fingerprint=$(ssh-keygen -lf ~/.ssh/id_rsa.pub | awk '{print $2}')
+	export TF_VAR_ssh_fingerprint=$(ssh-keygen -lf ~/.ssh/id_rsa_do.pub | awk '{print $2}')
 fi

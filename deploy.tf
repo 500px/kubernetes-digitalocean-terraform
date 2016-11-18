@@ -42,7 +42,7 @@ resource "digitalocean_droplet" "k8s_etcd" {
     image = "coreos-stable"
     name = "k8s-etcd"
     region = "nyc3"
-    size = "512mb"
+    size = "4gb"
     user_data = "${file("00-etcd.yaml")}"
     ssh_keys = [
         "${var.ssh_fingerprint}"
@@ -80,7 +80,7 @@ resource "digitalocean_droplet" "k8s_master" {
     image = "coreos-stable"
     name = "k8s-master"
     region = "nyc3"
-    size = "512mb"
+    size = "4gb"
     user_data = "${template_file.master_yaml.rendered}"
     ssh_keys = [
         "${var.ssh_fingerprint}"
@@ -176,7 +176,7 @@ resource "digitalocean_droplet" "k8s_worker" {
     image = "coreos-stable"
     name = "${format("k8s-worker-%02d", count.index + 1)}"
     region = "nyc3"
-    size = "512mb"
+    size = "4gb"
     user_data = "${template_file.worker_yaml.rendered}"
     ssh_keys = [
         "${var.ssh_fingerprint}"
@@ -268,14 +268,14 @@ EOF
     }
 }
 
-resource "null_resource" "deploy_microbot" {
-    depends_on = ["null_resource.setup_kubectl"]
-    provisioner "local-exec" {
-        command = <<EOF
-            sed -e "s/\$EXT_IP1/${digitalocean_droplet.k8s_worker.0.ipv4_address}/" < 04-microbot.yaml > ./secrets/04-microbot.rendered.yaml
-            until kubectl get pods 2>/dev/null; do printf '.'; sleep 5; done
-            kubectl create -f ./secrets/04-microbot.rendered.yaml
+# resource "null_resource" "deploy_microbot" {
+#     depends_on = ["null_resource.setup_kubectl"]
+#     provisioner "local-exec" {
+#         command = <<EOF
+#             sed -e "s/\$EXT_IP1/${digitalocean_droplet.k8s_worker.0.ipv4_address}/" < 04-microbot.yaml > ./secrets/04-microbot.rendered.yaml
+#             until kubectl get pods 2>/dev/null; do printf '.'; sleep 5; done
+#             kubectl create -f ./secrets/04-microbot.rendered.yaml
 
-EOF
-    }
-}
+# EOF
+#     }
+# }
