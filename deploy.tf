@@ -264,9 +264,27 @@ resource "null_resource" "deploy_dns_addon" {
     depends_on = ["null_resource.setup_kubectl"]
     provisioner "local-exec" {
         command = <<EOF
-            sed -e "s/\$DNS_SERVICE_IP/10.3.0.10/" < 03-dns-addon.yaml > ./03-dns-addon.rendered.yaml
-            until kubectl get pods 2>/dev/null; do printf '.'; sleep 5; done
-            kubectl create -f ./03-dns-addon.rendered.yaml
+            sed -e "s/\$DNS_SERVICE_IP/10.3.0.10/" < 03-dns-addon.yaml > 03-dns-addon.rendered-new.yaml
+            if [ ! -f "03-dns-addon.rendered.yaml" ]; then
+                mv 03-dns-addon.rendered-new.yaml 03-dns-addon.rendered.yaml
+                echo "Moving because yaml doesn't exist"
+                dns_addon_changed=true
+            else
+                if [ $(/usr/bin/cmp "03-dns-addon.rendered.yaml" "03-dns-addon.rendered-new.yaml") ];
+                then
+                    mv 03-dns-addon.rendered-new.yaml 03-dns-addon.rendered.yaml
+                    echo "Moving because yaml changed"
+                    dns_addon_changed=true
+                else
+                    rm 03-dns-addon.rendered-new.yaml
+                    echo "removing because yaml idn't change"
+                    dns_addon_changed=false
+                fi
+            fi
+            if [ $dns_addon_changed ]; then
+                until kubectl get pods 2>/dev/null; do printf '.'; sleep 5; done
+                kubectl create -f ./03-dns-addon.rendered.yaml
+            fi
 EOF
     }
 }
