@@ -3,7 +3,9 @@
 #	. ./setup_terraform.sh
 
 export TF_VAR_workers=8
-export TF_VAR_do_token=$(cat ./secrets/DO_TOKEN)
+if [ -n "$DO_TOKEN" ]; then
+	export TF_VAR_do_token=$DO_TOKEN
+fi
 export TF_VAR_pub_key="~/.ssh/id_rsa_do.pub"
 export TF_VAR_pvt_key="~/.ssh/id_rsa_do"
 
